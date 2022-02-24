@@ -28,16 +28,25 @@ async function getAll({ page_size, page_number }) {
     page_size = 20;
   }
 
-  events = await Event.find({})
-    .limit(page_size)
-    .skip(page_size * page)
-    .sort({ date: 1 });
+  try {
+    events = await Event.find({})
+      .limit(page_size)
+      .skip(page_size * page)
+      .sort({ date: 1 });
+  } catch (e) {
+    throw new Error(e);
+  }
 
   return events;
 }
 
 async function getOneById(id) {
   let event = {};
+  try {
+    event = await Event.findOne({ _id: id });
+  } catch (e) {
+    throw new Error(e);
+  }
 
   return event;
 }
@@ -54,13 +63,49 @@ async function create(details) {
     more_details,
   } = details;
 
+  try {
+    event = await Event.create({
+      name,
+      date,
+      location,
+      description,
+      campus_name,
+      created_by,
+      more_details,
+    });
+  } catch (e) {
+    throw new Error(e);
+  }
+
   return event;
 }
 
 async function _delete(id) {
+  try {
+    await Event.findByIdAndDelete({ _id: id });
+  } catch (e) {
+    throw new Error(e);
+  }
+
   return;
 }
 
-async function update({ id, details }) {
-  return;
+async function update(id, updated_field) {
+  let updated_event;
+  // updated_field should hold an object that holds the field and change
+
+  // e.g. {name: "New Name"}
+  try {
+    updated_event = await Event.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      updated_field,
+      { new: true }
+    );
+  } catch (e) {
+    throw new Error(e);
+  }
+
+  return updated_event;
 }

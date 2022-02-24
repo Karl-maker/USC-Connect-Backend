@@ -1,4 +1,4 @@
 const resources = require("./services/resources");
-const events = require("./services/events");
+const EventService = require("./services/events");
 
-module.exports = { resources, events };
+module.exports = { resources, EventService };
