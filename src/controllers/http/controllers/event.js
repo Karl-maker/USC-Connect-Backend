@@ -20,6 +20,7 @@ function eventController(io) {
     EventService.getAll({
       page_size: req.query.page_size,
       page_number: req.query.page_number,
+      campus: req.query.campus_name,
     })
       .then((events) => {
         res.status(200).json(events);

@@ -8,12 +8,19 @@ module.exports = {
   update,
 };
 
-async function getAll({ page_size, page_number }) {
+async function getAll({ page_size, page_number, campus }) {
   let events = [];
+  let filter = {};
   page_size = parseInt(page_size, 10);
   page_number = parseInt(page_number, 10);
   const page = Math.max(0, page_number);
   const date = new Date();
+
+  // Filter by...
+
+  if (campus) {
+    filter.campus_name = campus;
+  }
 
   /*
 
@@ -29,7 +36,12 @@ async function getAll({ page_size, page_number }) {
   }
 
   try {
-    events = await Event.find({})
+    events = await Event.find({
+      date: {
+        $gte: date.toISOString(),
+      },
+      ...filter,
+    })
       .limit(page_size)
       .skip(page_size * page)
       .sort({ date: 1 });
