@@ -19,7 +19,7 @@ async function getAll({ page_size, page_number, campus }) {
   // Filter by...
 
   if (campus) {
-    filter.campus_name = campus;
+    filter.campus_name = { $regex: new RegExp(campus, "i") };
   }
 
   /*
