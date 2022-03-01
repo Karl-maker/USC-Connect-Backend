@@ -4,7 +4,7 @@ const NotificationSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: false },
     description: { type: String },
-    link: { type: String },
+    department: { type: String }, // Help with emitting to rooms
     created_by: { type: String }, // Admin ID
   },
   {

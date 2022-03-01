@@ -7,7 +7,7 @@ const TOP_ROUTE = "/event";
 const { EventService } = require("../../../service");
 
 function eventController(io) {
-  // Get events
+  // Routes
   router.get(`${TOP_ROUTE}s`, getEvents);
   router.post(`${TOP_ROUTE}`, createEvent);
   router.get(`${TOP_ROUTE}/:id`, getOneEventById);
@@ -15,6 +15,8 @@ function eventController(io) {
   router.delete(`${TOP_ROUTE}/:id`, deleteEvent);
 
   return router;
+
+  // Methods
 
   function getEvents(req, res, next) {
     EventService.getAll({
