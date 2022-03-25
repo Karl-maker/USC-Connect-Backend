@@ -17,6 +17,7 @@ const router = express.Router();
 const exampleController = require("./controllers/example");
 const eventController = require("./controllers/event");
 const notificationController = require("./controllers/notification");
+const campusController = require("./controllers/campus");
 
 // Use call feature for passing io because this will seperate HTTP from Websockets
 
@@ -25,7 +26,8 @@ function controllerHandler() {
   router.use(
     exampleController(io),
     eventController(io),
-    notificationController(io)
+    notificationController(io),
+    campusController(io)
   );
 
   return router;
