@@ -14,6 +14,17 @@ When importing please proceed as such ( example: const io_controllers = require(
 const { notificationHandler } = require("./controllers/notification");
 
 function websockets(io) {
+  /*
+
+    21/02/2022 11:44AM
+
+    Multiple Events can be made..
+
+    _____.on.("example", () => { Logic });
+    _____.on.("example", () => { Other Logic });
+
+    */
+
   notificationHandler(io);
 }
 

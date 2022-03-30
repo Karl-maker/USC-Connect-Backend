@@ -1,4 +1,11 @@
 const resources = require("./services/resources");
-const events = require("./services/events");
+const EventService = require("./services/events");
+const NotificationService = require("./services/notifications");
+const CampusService = require("./services/campuses");
 
-module.exports = { resources, events };
+module.exports = {
+  resources,
+  EventService,
+  NotificationService,
+  CampusService,
+};
