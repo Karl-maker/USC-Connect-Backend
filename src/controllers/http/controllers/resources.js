@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
+const admin = require("../../../auth/admin");
 
 const service = require("../../../service");
 const config = require("../../../config");

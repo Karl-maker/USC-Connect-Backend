@@ -7,6 +7,7 @@ const Student = require("./models/students");
 const Subscription = require("./models/subscriptions");
 const Resource = require("./models/resources");
 const Origin = require("./models/origins");
+const Login = require("./models/logins");
 
 module.exports = {
   Event,
@@ -18,4 +19,5 @@ module.exports = {
   Subscription,
   Resource,
   Origin,
+  Login,
 };

@@ -17,7 +17,7 @@ module.exports = function http(app, express, io) {
   app.use(
     "/container",
     express.static(
-      path.join(__dirname, `../${config.resources.CONTAINER_PATH}`)
+      path.join(__dirname, `../../${config.resources.RESOURCE_PATH}`)
     )
   );
   app.use("*", (req, res, next) => {

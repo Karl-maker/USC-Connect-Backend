@@ -4,6 +4,7 @@ module.exports = {
   create,
   getAll,
   delete: _delete,
+  update,
 };
 
 async function getAll() {
@@ -17,9 +18,9 @@ async function getAll() {
   }
 }
 
-async function create(info) {
+async function create({ name, location, phone_number }) {
   try {
-    Campus.create(info);
+    return await Campus.create({ name, location, phone_number });
   } catch (err) {
     throw err;
   }
@@ -28,6 +29,15 @@ async function create(info) {
 async function _delete(campus_name) {
   try {
     Campus.delete({ name: campus_name });
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function update(name, updates) {
+  try {
+    const campus = await Campus.findOneAndUpdate({ name }, updates, { new: 1 });
+    return campus;
   } catch (err) {
     throw err;
   }

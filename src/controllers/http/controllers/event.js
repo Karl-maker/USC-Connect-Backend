@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const TOP_ROUTE = "/event";
+const admin = require("../../../auth/admin");
 
 // Import sevice
 
@@ -9,10 +10,10 @@ const { EventService } = require("../../../service");
 function eventController(io) {
   // Routes
   router.get(`${TOP_ROUTE}s`, getEvents);
-  router.post(`${TOP_ROUTE}`, createEvent);
+  router.post(`${TOP_ROUTE}`, admin.authorize, createEvent);
   router.get(`${TOP_ROUTE}/:id`, getOneEventById);
-  router.put(`${TOP_ROUTE}/:id`, updateEvent);
-  router.delete(`${TOP_ROUTE}/:id`, deleteEvent);
+  router.put(`${TOP_ROUTE}/:id`, admin.authorize, updateEvent);
+  router.delete(`${TOP_ROUTE}/:id`, admin.authorize, deleteEvent);
 
   return router;
 
@@ -39,7 +40,7 @@ function eventController(io) {
       location: body.location,
       description: body.description,
       campus_name: body.campus_name,
-      created_by: "GUEST",
+      created_by: req.administrator.email,
       more_details: body.more_details,
     })
       .then((event) => {

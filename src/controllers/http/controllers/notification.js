@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const TOP_ROUTE = "/notification";
+const admin = require("../../../auth/admin");
 
 // Import sevice
 
@@ -10,7 +11,7 @@ function notificationController(io) {
   // Routes
 
   router.get(`${TOP_ROUTE}/:id`, getNotificationById);
-  router.post(`${TOP_ROUTE}`, createNotification);
+  router.post(`${TOP_ROUTE}`, admin.authorize, createNotification);
   router.get(`${TOP_ROUTE}s`, getManyNotificationsByDepartment);
   router.delete(`${TOP_ROUTE}/:id`, deleteNotification);
 

@@ -18,12 +18,18 @@ const exampleController = require("./controllers/example");
 const eventController = require("./controllers/event");
 const notificationController = require("./controllers/notification");
 const campusController = require("./controllers/campus");
+const studentController = require("./controllers/student");
+const administratorController = require("./controllers/administrator");
+// const resourceController = require("./controllers/resources");
 
 // Use call feature for passing io because this will seperate HTTP from Websockets
 
 function controllerHandler() {
   const io = this.io;
   router.use(
+    studentController(io),
+    administratorController(io),
+    // resourceController(io),
     exampleController(io),
     eventController(io),
     notificationController(io),
