@@ -12,10 +12,21 @@ function campusController(io) {
   router.get(`${TOP_ROUTE}es`, getCampuses);
   router.post(`${TOP_ROUTE}`, admin.authorize, createCampus);
   router.put(`${TOP_ROUTE}/:campus_name`, admin.authorize, updateCampus);
+  router.delete(`${TOP_ROUTE}/:campus_name`, admin.authorize, deleteCampus);
 
   return router;
 
   // Methods
+
+  function deleteCampus(req, res, next) {
+    CampusService.delete(req.params.campus_name)
+      .then((result) => {
+        res.status(200).json({ message: "Deleted Successfully" });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 
   function updateCampus(req, res, next) {
     CampusService.update(req.params.campus_name, req.body)

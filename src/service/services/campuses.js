@@ -28,7 +28,7 @@ async function create({ name, location, phone_number }) {
 
 async function _delete(campus_name) {
   try {
-    Campus.delete({ name: campus_name });
+    Campus.findOneAndDelete({ name: campus_name });
   } catch (err) {
     throw err;
   }
