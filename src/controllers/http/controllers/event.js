@@ -2,9 +2,6 @@ const express = require("express");
 const router = express.Router();
 const TOP_ROUTE = "/event";
 const admin = require("../../../auth/admin");
-
-// Import sevice
-
 const { EventService } = require("../../../service");
 
 function eventController(io) {
@@ -17,13 +14,15 @@ function eventController(io) {
 
   return router;
 
-  // Methods
+  // Functions that will link to services
 
   function getEvents(req, res, next) {
     EventService.getAll({
       page_size: req.query.page_size,
       page_number: req.query.page_number,
       campus: req.query.campus_name,
+      category: req.query.category,
+      department: req.query.department,
     })
       .then((events) => {
         res.status(200).json(events);
@@ -42,6 +41,7 @@ function eventController(io) {
       campus_name: body.campus_name,
       created_by: req.administrator.email,
       more_details: body.more_details,
+      admin_id: req.administrator._id,
     })
       .then((event) => {
         res.status(200).json(event);

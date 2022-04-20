@@ -12,70 +12,52 @@ const config = require("../../../config");
 const { StudentService } = require("../../../service");
 const { authorize, login, register } = require("../../../auth/student");
 const { Login } = require("../../../model");
+const limiter = require("../../../middlewares/rate-limiter");
 const TOP_URL = "/student";
-
-const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 minutes
-  max: 60, // Limit each IP to 5 requests in API
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
 
 function studentController(io) {
   router.post(
     `${TOP_URL}/authenticate`,
-    rateLimit({
-      windowMs: 5 * 60 * 1000,
-      max: 500,
-    }),
+    limiter({ minutes: 10, max: 100 }),
     getAccessToken
   );
   router.post(`${TOP_URL}/register`, register, registerStudent);
-  router.get(`${TOP_URL}/confirm-email`, limiter, confirmStudent);
-  router.post(`${TOP_URL}/login`, limiter, login, loginStudent);
+  router.get(
+    `${TOP_URL}/confirm-email`,
+    limiter({ minutes: 10, max: 100 }),
+    confirmStudent
+  );
+  router.post(
+    `${TOP_URL}/login`,
+    limiter({ minutes: 10, max: 100 }),
+    login,
+    loginStudent
+  );
   router.post(
     `${TOP_URL}/request-reset-password/:email`,
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 3, // Limit each IP to 3 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 10, max: 100 }),
     requestResetStudentPassword
   );
   router.delete(
     `${TOP_URL}/authenticate`,
-    rateLimit({
-      windowMs: 5 * 60 * 1000,
-      max: 5,
-    }),
+    limiter({ minutes: 10, max: 100 }),
     logoutStudent
   );
   router.post(
     `${TOP_URL}/send-confirmation-email/:email`,
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 3, // Limit each IP to 3 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 10, max: 100 }),
     sendConfirmationEmail
   );
   router.post(`${TOP_URL}/reset-password/:email`, resetStudentPassword);
   router.put(
     `${TOP_URL}/password`,
-    rateLimit({
-      windowMs: 30 * 60 * 1000, // 30 minutes
-      max: 1, // Limit each IP to 1 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 10, max: 100 }),
     authorize,
     updateStudentPassword
   );
-  router.get(`${TOP_URL}`, authorize, (req, res, next) =>
-    res.status(200).json(req.student)
-  );
+  router.get(`${TOP_URL}`, authorize, (req, res, next) => {
+    res.status(200).json(req.student);
+  });
   router.delete(`${TOP_URL}`, authorize, deleteStudent);
 
   return router;
@@ -163,7 +145,7 @@ function studentController(io) {
 
       if (
         (await Login.find({
-          user_id: student._id,
+          user_id: student._id.toString(),
           user_type: "STUDENT",
         }).count()) > 4
       ) {

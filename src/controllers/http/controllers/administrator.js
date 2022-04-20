@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const rateLimit = require("express-rate-limit");
 const parseCookies = require("../../../utils/cookies");
 const {
   createAccessToken,
@@ -13,69 +12,64 @@ const { AdministratorService } = require("../../../service");
 const { authorize, login, register } = require("../../../auth/admin");
 const { Login } = require("../../../model");
 const TOP_URL = "/administrator";
+const limiter = require("../../../middlewares/rate-limiter");
 
-const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 minutes
-  max: 60, // Limit each IP to 5 requests in API
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
+/*
+
+See here for routes https://docs.google.com/document/d/11EkRFVFGe0vKpP8KcfVfDpTyRQVRyyPM/edit?usp=drive_web&ouid=117863472905771842840&rtpof=true
+
+*/
 
 function administratorController(io) {
+  // Routes
   router.post(
     `${TOP_URL}/authenticate`,
-    rateLimit({
-      windowMs: 5 * 60 * 1000,
-      max: 500,
-    }),
+    limiter({ minutes: 10, max: 100 }),
     getAccessToken
   );
-  router.post(`${TOP_URL}/register`, register, registerAdministrator);
-  router.post(`${TOP_URL}/login`, limiter, login, loginAdministrator);
+  router.post(
+    `${TOP_URL}/register`,
+    limiter({ minutes: 10, max: 5 }),
+    register,
+    registerAdministrator
+  );
+  router.post(
+    `${TOP_URL}/login`,
+    limiter({ minutes: 10, max: 5 }),
+    login,
+    loginAdministrator
+  );
   router.post(
     `${TOP_URL}/request-reset-password/:email`,
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 3, // Limit each IP to 3 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 60, max: 3 }),
     requestResetAdministratorPassword
   );
   router.delete(
     `${TOP_URL}/authenticate`,
-    rateLimit({
-      windowMs: 5 * 60 * 1000,
-      max: 5,
-    }),
+    limiter({ minutes: 10, max: 5 }),
     logoutAdministrator
   );
   router.post(
     `${TOP_URL}/send-confirmation-email/:email`,
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 3, // Limit each IP to 3 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 60, max: 5 }),
     sendConfirmationEmail
   );
   router.post(`${TOP_URL}/reset-password/:email`, resetAdministratorPassword);
   router.put(
     `${TOP_URL}/password`,
-    rateLimit({
-      windowMs: 30 * 60 * 1000, // 30 minutes
-      max: 1, // Limit each IP to 1 requests in API
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    }),
+    limiter({ minutes: 60, max: 1 }),
     authorize,
     updateAdministratorPassword
   );
-  router.get(`${TOP_URL}`, authorize, (req, res, next) =>
-    res.status(200).json(req.administrator)
+  router.get(`${TOP_URL}`, authorize, (req, res, next) => {
+    res.status(200).json(req.administrator);
+  });
+  router.delete(
+    `${TOP_URL}`,
+    limiter({ minutes: 10, max: 5 }),
+    authorize,
+    deleteAdministrator
   );
-  router.delete(`${TOP_URL}`, authorize, deleteAdministrator);
 
   return router;
 
@@ -157,7 +151,7 @@ function administratorController(io) {
 
       if (
         (await Login.find({
-          user_id: administrator._id,
+          user_id: administrator._id.toString(),
           user_type: "ADMINISTRATOR",
         }).count()) > 4
       ) {

@@ -2,7 +2,11 @@ const express = "express";
 const router = express.Router();
 const TOP_ROUTE = "/subscription";
 
-// Import service
+/*
+
+See here for routes https://docs.google.com/document/d/11EkRFVFGe0vKpP8KcfVfDpTyRQVRyyPM/edit?usp=drive_web&ouid=117863472905771842840&rtpof=true
+
+*/
 
 const { SubscriptionService } = require("../../../service");
 
@@ -16,7 +20,7 @@ function subscriptionController(io) {
 
   return router;
 
-  // Methods
+  // Functions that will link to services
 
   function getOneSubscriptionById(req, res, next) {
     SubscriptionService.getOneById(req.params.id)

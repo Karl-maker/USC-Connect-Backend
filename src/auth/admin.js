@@ -4,37 +4,61 @@ const { Administrator } = require("../model");
 const { AdministratorService } = require("../service");
 const jwt = require("jsonwebtoken");
 
+/*
+
+Authentication and Authorization processes are handled here by linking to the database and services for administrators
+
+*/
+
+// This middleware will check if user is an admin then allow them to proceed, this acts as a guard to resources
+
+/*
+
+    1. JWT token is taken from HTTP header as a Bearer Token
+    2. It is then decrypted and the payload will contain the user's info
+    3. This info will be compared and checked
+
+*/
+
 async function authorize(req, res, next) {
   try {
+    // Getting and verifying jwt
+
     const access_token = await getAccessToken(req);
-
     const ACCESS_TOKEN_PUBLIC_KEY = config.jwt.ACCESS_TOKEN_PUBLIC_KEY;
-
     const payload = await jwt.verify(access_token, ACCESS_TOKEN_PUBLIC_KEY);
+
+    // Checking if jwt is an Administrator, because both student and admin uses same keys
 
     if (payload.user_type !== "ADMINISTRATOR") {
       throw { name: "Unauthorized", message: "Not authorized" };
     }
+
+    // Check Database if user exists
 
     req.administrator = await Administrator.findOne(
       { _id: payload.user._id },
       { token_expiration: 0, token_code: 0, password: 0 }
     );
 
+    // If not an error is thrown and sent to the error handler middleware
+
     if (!req.administrator) {
       throw { name: "Unauthorized", message: "Not authorized" };
     }
+
     next();
   } catch (err) {
     next(err);
   }
 }
 
+// Login middleware to allow for administrators to sign in
+
 async function login(req, res, next) {
   const { password, email } = req.body;
 
   try {
-    // May login with email or ID
     const administrator = await Administrator.findOne({
       email: email.toLowerCase(),
       is_confirmed: true,
@@ -61,7 +85,7 @@ async function login(req, res, next) {
       };
     }
 
-    // Create and send access_token to student after confirming login
+    // Create and send access_token for admin after confirming login
 
     let access_token;
     administrator["password"] = null;
@@ -87,7 +111,7 @@ async function register(req, res, next) {
       password,
     });
 
-    //await AdministratorService.sendConfirmationEmail(user.email);
+    // Administrators should need to be confirmed through the database or some other means
 
     next();
   } catch (error) {

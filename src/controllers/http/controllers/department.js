@@ -2,10 +2,13 @@ const express = "express";
 const router = express.Router();
 const TOP_ROUTE = "/department";
 const admin = require("../../../auth/admin");
-
-// Import service
-
 const { DepartmentService } = require("../../../service");
+
+/*
+
+See here for routes https://docs.google.com/document/d/11EkRFVFGe0vKpP8KcfVfDpTyRQVRyyPM/edit?usp=drive_web&ouid=117863472905771842840&rtpof=true
+
+*/
 
 function departmentController(io) {
   // Routes
@@ -14,7 +17,7 @@ function departmentController(io) {
 
   return router;
 
-  // Methods
+  // Functions that will link to services
 
   function getDepartments(req, res, next) {
     DepartmentService.getAll(req.body)

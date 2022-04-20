@@ -7,6 +7,7 @@ const EventSchema = new mongoose.Schema(
     location: { type: String },
     description: { type: String },
     campus_name: { type: String },
+    category: { type: String, default: "event" },
     more_details: {},
     created_by: { type: String }, // Admin ID
   },

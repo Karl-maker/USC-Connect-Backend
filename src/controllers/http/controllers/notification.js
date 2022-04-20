@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const TOP_ROUTE = "/notification";
 const admin = require("../../../auth/admin");
-
-// Import sevice
-
 const { NotificationService } = require("../../../service");
+
+/*
+
+See here for routes https://docs.google.com/document/d/11EkRFVFGe0vKpP8KcfVfDpTyRQVRyyPM/edit?usp=drive_web&ouid=117863472905771842840&rtpof=true
+
+*/
 
 function notificationController(io) {
   // Routes
-
   router.get(`${TOP_ROUTE}/:id`, getNotificationById);
   router.post(`${TOP_ROUTE}`, admin.authorize, createNotification);
   router.get(`${TOP_ROUTE}s`, getManyNotificationsByDepartment);
@@ -17,7 +19,7 @@ function notificationController(io) {
 
   return router;
 
-  // Methods
+  // Functions that will link to services
 
   function deleteNotification(req, res, next) {
     NotificationService.delete(req.params.id)
@@ -60,7 +62,6 @@ function notificationController(io) {
 
   function emitNewNotification(department, notification) {
     // After being created the notification needs to be emitted to the approprate NAMESPACE in the specific room
-
     // Use JSON.stringify until issue with sending mongoose object to POSTMAN is resolved
     io.of("/notification")
       .to(department)

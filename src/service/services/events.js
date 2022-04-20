@@ -8,7 +8,13 @@ module.exports = {
   update,
 };
 
-async function getAll({ page_size, page_number, campus }) {
+async function getAll({
+  page_size,
+  page_number,
+  campus,
+  category,
+  department,
+}) {
   let events = [];
   let filter = {};
   page_size = parseInt(page_size, 10);
@@ -20,6 +26,14 @@ async function getAll({ page_size, page_number, campus }) {
 
   if (campus) {
     filter.campus_name = { $regex: new RegExp(campus, "i") };
+  }
+
+  if (category) {
+    filter.category = { $regex: new RegExp(category, "i") };
+  }
+
+  if (department) {
+    filter.department = { $regex: new RegExp(department, "i") };
   }
 
   /*
@@ -73,6 +87,7 @@ async function create(details) {
     campus_name,
     created_by,
     more_details,
+    admin_id,
   } = details;
 
   try {
@@ -84,6 +99,7 @@ async function create(details) {
       campus_name,
       created_by,
       more_details,
+      created_by: admin_id,
     });
   } catch (e) {
     throw new Error(e);

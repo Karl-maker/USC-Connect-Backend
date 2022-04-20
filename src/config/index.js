@@ -2,6 +2,16 @@ require("dotenv-flow").config({
   silent: true,
 });
 
+/*
+
+  Central point of all major variables that are needed to run the service.
+
+  Everything should be edited or altered to fit the CPU it will be ran on by using .env files.
+
+  A .example.env file will be avaliable to display all variables used by the system.
+
+*/
+
 const path = require("path");
 var LOG_LOCATION;
 const ENV = process.env;
@@ -15,18 +25,6 @@ try {
 } catch (err) {
   LOG_LOCATION = path.resolve(__dirname, "../../logs/errors.log");
 }
-
-/*
-
-  Central point of all major variables that are needed to run the service.
-
-  Everything should be edited or altered to fit the CPU it will be ran on by using .env files.
-
-  A .example.env file will be avaliable to display all variables used by the system.
-
-*/
-
-// Logger isn't initiated yet so we use console.error
 
 try {
   ACCESS_KEYS = JSON.parse(ENV.ACCESS_KEYS);

@@ -2,6 +2,16 @@ const config = require("../config");
 const jwt = require("jsonwebtoken");
 const { Administrator, Student, Login } = require("../model");
 
+/*
+
+Handles all JWT functionality
+
+For more info about jsonwebtoken module check here: https://www.npmjs.com/package/jsonwebtoken
+For education about how JWT's work check here: https://www.youtube.com/watch?v=soGRyl9ztjI
+
+
+*/
+
 module.exports = {
   getAccessToken,
   createAccessToken,
@@ -20,7 +30,7 @@ async function createAccessToken(user, user_type) {
 
   try {
     access_token = await jwt.sign(
-      { user: body, user_type },
+      { user: body, user_type: user_type },
       config.jwt.ACCESS_TOKEN_PRIVATE_KEY,
       {
         expiresIn: config.jwt.ACCESS_TOKEN_LIFE,
@@ -33,18 +43,7 @@ async function createAccessToken(user, user_type) {
   }
 }
 
-async function getAccessToken(req) {
-  let access_token =
-    req.headers["x-access-token"] || req.headers["authorization"];
-
-  // Remove Bearer from string
-  access_token = access_token.replace(/^Bearer\s+/, "");
-
-  return access_token;
-}
-
 async function createRefreshToken(user, user_type) {
-  //user_type = ADMIN, STUDENT
   const body = {
     _id: user._id,
     email: user.email,
@@ -59,6 +58,17 @@ async function createRefreshToken(user, user_type) {
   );
 
   return refresh_token;
+}
+
+// Getting token from HTTP headers
+
+async function getAccessToken(req) {
+  let access_token =
+    req.headers["x-access-token"] || req.headers["authorization"];
+
+  access_token = access_token.replace(/^Bearer\s+/, "");
+
+  return access_token;
 }
 
 async function getAccessTokenWithRefreshToken(refresh_token) {
@@ -92,7 +102,7 @@ async function getAccessTokenWithRefreshToken(refresh_token) {
     throw { name: "Unauthorized", message: "No User Found" };
   }
 
-  return await createAccessToken(user);
+  return await createAccessToken(user, payload.user_type);
 }
 
 async function deleteRefreshToken(refresh_token) {
@@ -119,7 +129,7 @@ async function deleteRefreshToken(refresh_token) {
   return;
 }
 
-// GENERAL TOKEN
+// These tokens maybe used for other aspects such as email confirmation etc.
 
 async function createGeneralToken(email, expires_in) {
   // verify this
