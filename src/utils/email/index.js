@@ -36,11 +36,13 @@ function sendEmail(to, subject, payload, template) {
         },
       ],
     };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      // Capture any errors
+    });
   } catch (err) {
     throw new Error({ name: "UnexpectedError", message: err });
   }
-
-  transporter.sendMail(mailOptions);
 }
 
 module.exports = {

@@ -24,6 +24,8 @@ module.exports = async function entry() {
     },
   });
 
+  // Move this cors
+
   app.use(
     cors({
       origin: corsURLs,
